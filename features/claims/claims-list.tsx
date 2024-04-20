@@ -9,8 +9,8 @@ interface ClaimsListProps {
   imgCallback: (index: number) => void;
   event_id: number;
   eventData: IEventData | undefined;
-  quest: IQuest | undefined;
-  rewardImg: string;
+  quests: IQuest[];
+  rewardImgs: string[];
 }
 
 const ClaimsList: React.FC<ClaimsListProps> = ({
@@ -19,8 +19,8 @@ const ClaimsList: React.FC<ClaimsListProps> = ({
   claimBtnCallback,
   imgCallback,
   eventData,
-  quest,
-  rewardImg,
+  quests,
+  rewardImgs,
 }) => {
   const getQRCode = (event: React.MouseEvent<HTMLElement>) => {
     const value: number = parseInt((event.currentTarget as HTMLButtonElement).value, 10);
@@ -30,9 +30,8 @@ const ClaimsList: React.FC<ClaimsListProps> = ({
     const value: number = parseInt((event.currentTarget as HTMLButtonElement).value, 10);
     claimBtnCallback(value);
   };
-  const getImg = (event: React.MouseEvent<HTMLElement>) => {
-    const value: number = parseInt((event.currentTarget as HTMLButtonElement).value, 10);
-    imgCallback(value);
+  const getImg = (index: number) => {
+    imgCallback(index);
   };
   const copyToClipBoard = () => {
     const origin = typeof window !== 'undefined' && window.location.origin ? window.location.origin : '';
@@ -43,25 +42,39 @@ const ClaimsList: React.FC<ClaimsListProps> = ({
   return (
     <table className="text-[#3D3D3D] w-full">
       <tbody>
+        {
+          rewardImgs.map((rewardImg, index) => (
+            <tr key={index} className="hover:text-black hover:bg-[#cbd5e173] ">
+              <td>{quests[index]?.rewardTitle}</td>
+              <td>{quests[index]?.rewardDescription}</td>
+              <td className="px-[10px]">
+                <button
+                  type="button"
+                  onClick={() => getImg(index)}
+                  className="flex items-center hover:opacity-20 transition-opacity ease-in-out"
+                >
+                  {rewardImg ? (
+                    <IpfsImage
+                      src={rewardImg}
+                      alt="reward"
+                      className="mx-auto object-contain max-w-[50px]"
+                    />
+                  ) : (
+                    <div style={{ width: 50, height: 50 }} />
+                  )}
+                </button>
+              </td>
+              <td className="w-[150px]"></td>
+              <td className="w-[200px]"></td>
+              <td className="w-[200px]"></td>
+            </tr>
+          ))
+        }
+
         <tr className="hover:text-black hover:bg-[#cbd5e173] ">
-          <td>{quest?.rewardTitle}</td>
-          <td className="px-[10px]">
-            <button
-              type="button"
-              onClick={getImg}
-              className="flex items-center hover:opacity-20 transition-opacity ease-in-out"
-            >
-              {quest ? (
-                <IpfsImage
-                  src={rewardImg}
-                  alt="reward"
-                  className="mx-auto object-contain max-w-[50px]"
-                />
-              ) : (
-                <div style={{ width: 50, height: 50 }} />
-              )}
-            </button>
-          </td>
+          <td></td>
+          <td></td>
+          <td className="px-[10px]"></td>
           <td className="w-[150px]">
             <button
               type="button"

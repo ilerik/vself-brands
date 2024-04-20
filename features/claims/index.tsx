@@ -13,7 +13,7 @@ interface ClaimsProps {
   eventId: number;
   eventData: IEventData | undefined;
   eventStats: IEventStats | undefined;
-  quest: IQuest | undefined;
+  quests: IQuest[];
 }
 
 interface ClaimWidgetState {
@@ -55,8 +55,8 @@ const claimReducer = (state: ClaimWidgetState, action: ClaimWidgetAction) => {
   }
 };
 
-const Claims: React.FC<ClaimsProps> = ({ eventId, eventData, eventStats, quest }) => {
-  const [rewardImg, setRewardImg] = useState<string>('');
+const Claims: React.FC<ClaimsProps> = ({ eventId, eventData, eventStats, quests }) => {
+  const [rewardImgs, setRewardImgs] = useState<string[]>([]);
   const [{ qrString, imgSrc, claimString }, dispatch] = useReducer(claimReducer, initialState);
 
   const closeModal = () => {
@@ -66,10 +66,10 @@ const Claims: React.FC<ClaimsProps> = ({ eventId, eventData, eventStats, quest }
     });
   };
 
-  const openImgModal = async () => {
+  const openImgModal = async (index: number) => {
     dispatch({
       type: ClaimWidgetActionKind.OPEN_IMG_MODAL,
-      payload: String(rewardImg),
+      payload: String(rewardImgs[index]),
     });
   };
 
@@ -93,16 +93,22 @@ const Claims: React.FC<ClaimsProps> = ({ eventId, eventData, eventStats, quest }
   };
 
   useEffect(() => {
-    if (quest) {
+    if (quests.length > 0) {
       (async () => {
-        const result = (await axios.get(quest?.rewardUri!)).data;
-        const imgUri = result.image;
-        const rewardImg = `https://nftstorage.link/ipfs/${imgUri.split('//')[1]}`;
+        const rewardImgs: string[] = [];
+        await Promise.all(quests.map(async (quest) => {
+          const result = (await axios.get(quest?.rewardUri!)).data;
+          const imgUri = result.image;
+          const rewardImg = `https://nftstorage.link/ipfs/${imgUri.split('//')[1]}`;
+          rewardImgs.push(rewardImg);
+        }));
 
-        setRewardImg(rewardImg);
+        setRewardImgs((current) => {
+          return [...current, ...rewardImgs];
+        });
       })();
     }
-  }, [quest]);
+  }, [quests.length]);
 
   return (
     <section className="flex flex-col w-full py-[40px] mb-4 overflow-y-auto bg-white rounded-[40px]">
@@ -120,8 +126,8 @@ const Claims: React.FC<ClaimsProps> = ({ eventId, eventData, eventStats, quest }
         <ClaimsList
           event_id={eventId}
           eventData={eventData}
-          quest={quest}
-          rewardImg={rewardImg}
+          quests={quests}
+          rewardImgs={rewardImgs}
           imgCallback={openImgModal}
           qrbtnCallback={openQRCodeModal}
           claimBtnCallback={openClaimModal}

@@ -45,7 +45,7 @@ const CreateNewEvent: React.FC = () => {
   // Uploading Images to IPFS and Start New Event after success
   const createNewEvent = async (eventData: CollectionFormData) => {
     try {
-      const { event_description, event_name, finish_time, start_time, quest, file } = eventData;
+      const { event_description, event_name, finish_time, start_time, quests, files } = eventData;
 
       console.log('eventData', eventData);
 
@@ -62,17 +62,17 @@ const CreateNewEvent: React.FC = () => {
         warningItems.push('Event Description');
       }
 
-      if (!file) {
+      if (files.length !== quests.length) {
         isValid = false;
         warningItems.push('NFT image');
       }
 
-      if (!quest?.reward_title) {
+      if (quests.filter(x => x.reward_title == undefined || x.reward_title == '').length > 0) {
         isValid = false;
         warningItems.push('Reward title');
       }
 
-      if (!quest?.reward_description) {
+      if (quests.filter(x => x.reward_description == undefined || x.reward_description == '').length > 0) {
         isValid = false;
         warningItems.push('Reward description');
       }
@@ -89,16 +89,11 @@ const CreateNewEvent: React.FC = () => {
         ...eventData,
       });
 
-      // Resize Images Before Upload
-      const resizedFile = await resizeFile(file!);
-
-      // Upload metadata To IPFS And Getiing Download URLS
-      const meatadataUri = await uploadMetadataToIPFS(quest.reward_title, quest.reward_description, resizedFile);
-      console.log('meatadataUri', meatadataUri);
-
-      // Placing CIDs of Images to Request
-      quest.reward_uri = meatadataUri;
-      console.log('quest', quest);
+      const questsWithMetadataUris = await Promise.all(quests.map(async (quest, index) => {
+        const resizedFile = await resizeFile(files[index]);
+        const meatadataUri = await uploadMetadataToIPFS(quest.reward_title, quest.reward_description, resizedFile);
+        return { ...quest, reward_uri: meatadataUri };
+      }));
 
       // Starting New Event In NEAR
       const tx = await writeContract({
@@ -110,7 +105,14 @@ const CreateNewEvent: React.FC = () => {
           event_description as any,
           Math.floor(start_time / 10 ** 9),
           Math.floor(finish_time / 10 ** 9),
-          [...Object.values(quest)],
+          // [...questsWithMetadataUris.map(quest => Object.values(quest))],
+          questsWithMetadataUris.map(quest => {
+            return {
+              rewardTitle: quest.reward_title,
+              rewardDescription: quest.reward_description,
+              rewardUri: quest.reward_uri,
+            }
+          })
         ],
         chainId: CAMINO_CHAIN_ID
       });

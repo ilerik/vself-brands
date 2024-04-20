@@ -10,6 +10,8 @@ import UploadImageButton from '../../components/uploadImageButton';
 import CalendarIcon from '../../components/icons/CalendarIcon';
 
 const initialQuest: Quest = {
+  // qr_prefix: '',
+  // qr_prefix_len: 0,
   reward_description: '',
   reward_title: 'NFT Reward #1',
   reward_uri: '',
@@ -18,10 +20,10 @@ const initialQuest: Quest = {
 const initialEventFormState: CollectionFormData = {
   event_name: '',
   event_description: '',
-  quest: initialQuest,
+  quests: [initialQuest],
   start_time: new Date().getTime() * 1000000,
   finish_time: (new Date().getTime() + 86400000) * 1000000,
-  file: undefined,
+  files: [],
 };
 
 interface EventFormProps {
@@ -33,7 +35,7 @@ interface EventFormProps {
 const EventForm: React.FC<EventFormProps> = ({ submitForm, event_data, toggle }) => {
   const [eventFormState, setEventFormState] = useState<CollectionFormData>(event_data || initialEventFormState);
 
-  const { event_name, event_description, quest, start_time, finish_time, file } = eventFormState;
+  const { event_name, event_description, quests, start_time, finish_time, files } = eventFormState;
 
   // New Event Form Handlers
   const onEventTitleChange = (event: React.FormEvent<HTMLInputElement>): void => {
@@ -55,16 +57,33 @@ const EventForm: React.FC<EventFormProps> = ({ submitForm, event_data, toggle })
   };
 
   // Quest/Actions Form Handlers
-  const onQuestChange: QuestChangeCallback = (field, value): void => {
+  const onQuestChange: QuestChangeCallback = (index, field, value): void => {
     setEventFormState((prevState) => ({
       ...prevState,
-      quest: { ...prevState.quest, [field]: value },
+      quests: prevState.quests.map((q, i) => (i === index ? { ...q, [field]: value } : q)),
     }));
   };
 
-  const setFile = (file: File) => {
-    setEventFormState((prevState) => ({ ...prevState, file: file }));
+  const addNewQuest = (): void => {
+    setEventFormState((prevState) => ({
+      ...prevState,
+      quests: [...prevState.quests, { ...initialQuest, reward_title: `New Quest #${prevState.quests.length + 1}` }],
+    }));
   };
+
+  const removeQuest = (index: number): void => {
+    setEventFormState((prevState) => ({
+      ...prevState,
+      quests: prevState.quests.filter((_, i) => i !== index),
+    }));
+  };
+
+  const setFilesArray = (file: File, index: number) => {
+    const newFilesArray = [...files];
+    newFilesArray[index] = file;
+    setEventFormState((prevState) => ({ ...prevState, files: newFilesArray }));
+  };
+
 
   // Submitting Form
   const onNewEventSubmit = (event: React.FormEvent): void => {
@@ -76,8 +95,8 @@ const EventForm: React.FC<EventFormProps> = ({ submitForm, event_data, toggle })
       event_description,
       finish_time,
       start_time,
-      quest,
-      file,
+      quests,
+      files,
     });
   };
 
@@ -135,25 +154,37 @@ const EventForm: React.FC<EventFormProps> = ({ submitForm, event_data, toggle })
         </span>
       </div>
 
-      <div className="flex-col flex mb-4 p-5 rounded-xl bg-white md:mb-0  relative">
-        <h5 className="font-drukMedium uppercase text-black text-xl mb-2">NFT Reward</h5>
-        <div className="flex flex-col relative">
-          <UploadImageButton
-            file={file}
-            onImageSet={(file: File | null): void => {
-              if (file) {
-                setFile(file);
-              }
-            }}
-          />
-          <QuestComponent
-            quest={quest}
-            onQuestChange={onQuestChange}
-            setFile={setFile}
-          />
+      {quests.map((quest, index) => (
+        <div key={index} className="flex-col flex mb-4 p-5 rounded-xl bg-white md:mb-0  relative">
+          <h5 className="font-drukMedium uppercase text-black text-xl mb-2">NFT Reward</h5>
+          <div className="flex flex-col relative">
+            <UploadImageButton
+              file={files[index]}
+              onImageSet={(file: File | null): void => {
+                if (file) {
+                  setFilesArray(file, index);
+                }
+              }}
+            />
+            <QuestComponent
+              quest={quest}
+              onQuestChange={onQuestChange}
+              index={index}
+              removable={quests.length >= 2}
+              removeQuest={removeQuest}
+              setFilesArray={setFilesArray}
+            />
+          </div>
         </div>
-      </div>
+      ))}
       <div className="flex flex-col p-5 rounded-xl bg-white relative justify-center h-full">
+        <button
+          type="button"
+          onClick={addNewQuest}
+          className="flex my-4 self-center px-6 py-2.5 bg-transparent border-[1px] border-[#019FFF] text-[#019FFF] hover:text-white font-medium text-xs leading-tight uppercase rounded-full hover:bg-[#019FFF] outline-none transition duration-150 ease-in-out"
+        >
+          Add NFT Reward
+        </button>
         <button
           type="submit"
           className="flex my-4 self-center px-6 py-2.5 bg-transparent border-[1px] border-[#019FFF] text-[#019FFF] hover:text-white font-medium text-xs leading-tight uppercase rounded-full hover:bg-[#019FFF] outline-none transition duration-150 ease-in-out"

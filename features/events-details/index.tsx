@@ -11,13 +11,13 @@ import Claims from '../claims';
 interface EventDetailsProps {
   eventStats: IEventStats | undefined;
   eventData: IEventData | undefined;
-  quest: IQuest | undefined;
+  quests: IQuest[];
   eventActions: IEventAction[];
   eventId: number;
   isActive: boolean;
 }
 
-const EventDetails: React.FC<EventDetailsProps> = ({ eventStats, eventData, quest, eventActions, eventId, isActive }) => {
+const EventDetails: React.FC<EventDetailsProps> = ({ eventStats, eventData, quests, eventActions, eventId, isActive }) => {
   const { address } = useAccount();
   const [userAddress, setUserAddress] = useState<`0x${string}` | undefined>(undefined);
   const [isOwnEvent, setIsOwnEvent] = useState<boolean>(false);
@@ -57,7 +57,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ eventStats, eventData, ques
           eventId={Number(eventId)}
           eventData={eventData}
           eventStats={eventStats}
-          quest={quest}
+          quests={quests}
         />
       }
 

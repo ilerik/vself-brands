@@ -266,9 +266,14 @@
                 "internalType": "uint256",
                 "name": "",
                 "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
             }
         ],
-        "name": "_eventIdToQuest",
+        "name": "_eventIdToQuests",
         "outputs": [
             {
                 "internalType": "string",
@@ -626,9 +631,9 @@
                                 "type": "string"
                             }
                         ],
-                        "internalType": "struct VSelfEvents.Quest",
-                        "name": "quest",
-                        "type": "tuple"
+                        "internalType": "struct VSelfEvents.Quest[]",
+                        "name": "quests",
+                        "type": "tuple[]"
                     }
                 ],
                 "internalType": "struct VSelfEvents.Event",
@@ -931,9 +936,9 @@
                                 "type": "string"
                             }
                         ],
-                        "internalType": "struct VSelfEvents.Quest",
-                        "name": "quest",
-                        "type": "tuple"
+                        "internalType": "struct VSelfEvents.Quest[]",
+                        "name": "quests",
+                        "type": "tuple[]"
                     }
                 ],
                 "internalType": "struct VSelfEvents.Event[]",
@@ -1109,9 +1114,9 @@
                         "type": "string"
                     }
                 ],
-                "internalType": "struct VSelfEvents.Quest",
-                "name": "_quest",
-                "type": "tuple"
+                "internalType": "struct VSelfEvents.Quest[]",
+                "name": "_quests",
+                "type": "tuple[]"
             }
         ],
         "name": "startEvent",

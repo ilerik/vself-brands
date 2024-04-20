@@ -13,7 +13,7 @@ interface EventDetailedPageProps {
   eventActions: any;
   eventData: IEventData;
   eventStats: IEventStats;
-  quest: IQuest;
+  quests: IQuest[];
   isActive: boolean;
 }
 
@@ -22,7 +22,7 @@ const EventDetailedPage: NextPage<EventDetailedPageProps> = ({
   eventData,
   eventStats,
   eventActions,
-  quest,
+  quests,
   isActive
 }) => {
   return (
@@ -32,7 +32,7 @@ const EventDetailedPage: NextPage<EventDetailedPageProps> = ({
         eventActions={eventActions}
         eventStats={eventStats}
         eventData={eventData}
-        quest={quest}
+        quests={quests}
         isActive={isActive}
       />
     </PageLayout>
@@ -89,7 +89,7 @@ export const getServerSideProps = async ({ query, res }: GetServerSidePropsConte
       eventData: eventData,
       eventStats: (eventInfo as any)?.eventStats,
       eventActions: eventActions,
-      quest: (eventInfo as any)?.quest,
+      quests: (eventInfo as any)?.quests || [],
       isActive,
     },
   };
