@@ -1,8 +1,8 @@
 import { BigNumber } from 'ethers';
 
 export interface Quest {
-  // qr_prefix: string;
-  // qr_prefix_len: number;
+  qr_prefix: string;
+  qr_prefix_len: number;
   reward_description: string;
   reward_title: string;
   reward_uri: string;

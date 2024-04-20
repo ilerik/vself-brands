@@ -10,8 +10,8 @@ import UploadImageButton from '../../components/uploadImageButton';
 import CalendarIcon from '../../components/icons/CalendarIcon';
 
 const initialQuest: Quest = {
-  // qr_prefix: '',
-  // qr_prefix_len: 0,
+  qr_prefix: '',
+  qr_prefix_len: 0,
   reward_description: '',
   reward_title: 'NFT Reward #1',
   reward_uri: '',
