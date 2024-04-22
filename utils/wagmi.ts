@@ -59,7 +59,7 @@ const chains = [
     ...(REACT_APP_ENABLE_TESTNETS ? [columbus] : [camino]),
 ];
 
-export const projectId = '664df1515d4bd775b7d5705b8277ff35';
+export const projectId = 'fdc3549dda9fc411ecd7b15be5766117';
 
 const { publicClient, webSocketPublicClient } = configureChains(
     chains,
