@@ -1,11 +1,13 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { readContract } from '@wagmi/core';
 import { IEventData } from '../../models/Event';
 import { formatTimeStampToLocaleDateString } from '../../utils';
+import { CAMINO_CHAIN_ID, CAMINO_EVENTS_CONTRACT_ADDRESS } from '../../constants/endpoints';
+import eventsContractAbi from '../../abis/events-abi.json';
 
 interface EventRowProps {
-  questsLength: number;
   event_name: string;
   total_users: number;
   start_time: number;
@@ -15,7 +17,6 @@ interface EventRowProps {
 
 const EventRow: React.FC<EventRowProps> = ({
   event_id,
-  questsLength,
   event_name,
   total_users,
   start_time,
@@ -26,6 +27,30 @@ const EventRow: React.FC<EventRowProps> = ({
   const navigateToEvent = () => {
     router.push(eventUrl);
   };
+  const [questsLen , setQuestsLen] = useState(0);
+  useEffect(() => {
+    getQuestsLen();
+  } , []);
+  const getQuestsLen = async () => {
+    try {
+      const event = await readContract({
+        address: CAMINO_EVENTS_CONTRACT_ADDRESS,
+        abi: eventsContractAbi,
+        functionName: 'getEvent',
+        args: [
+          event_id
+        ],
+        chainId: CAMINO_CHAIN_ID
+      });
+      console.log(event)
+      setQuestsLen((event as any).quests.length);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+
+
   return (
     <tr
       onClick={navigateToEvent}
@@ -34,7 +59,7 @@ const EventRow: React.FC<EventRowProps> = ({
       <td className="px-4 py-2">
         <Link href={eventUrl}>{event_name}</Link>
       </td>
-      <td className="px-4 py-2 text-center hidden sm:table-cell">{questsLength}</td>
+      <td className="px-4 py-2 text-center hidden sm:table-cell">{questsLen}</td>
       <td className="px-4 py-2 text-center hidden sm:table-cell">{total_users}</td>
       <td className="px-4 py-2 text-center hidden sm:table-cell">{formatTimeStampToLocaleDateString(start_time)}</td>
       <td className="px-4 py-2 text-center">{formatTimeStampToLocaleDateString(finish_time)}</td>
@@ -65,7 +90,6 @@ const EventTable: React.FC<EventTableProps> = ({ events }) => {
             event_id={Number(event.eventId)}
             event_name={event.eventName}
             total_users={Number(event.totalUsers)}
-            questsLength={1}
             start_time={Number(event.startTime)}
             finish_time={Number(event.finishTime)}
           />

@@ -1,21 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useAccount, useContractEvent } from 'wagmi';
-import { writeContract } from '@wagmi/core';
+import { writeContract, readContract } from '@wagmi/core';
 import { useWeb3Modal } from '@web3modal/react';
 import Loader from '../../components/loader';
 import { IEventStats } from '../../models/Event';
 import { CAMINO_CHAIN_ID, CAMINO_EVENTS_CONTRACT_ADDRESS } from '../../constants/endpoints';
 import eventsContractAbi from "../../abis/events-abi.json";
+import axios from 'axios';
 
 const DEFAULT_ERROR_MESSAGE = 'Checkin failed. Please try again or feel free to reach us via email: info@vself.app';
 
 interface ClaimFormProps {
   eventId: number;
   eventStats: IEventStats | undefined;
+  index: number;
+  isByBackendWallet: boolean
 }
 
-const ClaimForm: React.FC<ClaimFormProps> = ({ eventId, eventStats }) => {
+const ClaimForm: React.FC<ClaimFormProps> = ({ eventId, eventStats, index, isByBackendWallet }) => {
   const { address } = useAccount();
   const { open } = useWeb3Modal();
   const [userAddress, setUserAddress] = useState<`0x${string}` | undefined>(undefined);
@@ -71,30 +74,60 @@ const ClaimForm: React.FC<ClaimFormProps> = ({ eventId, eventStats }) => {
       return;
     }
 
-    if (participants.includes(userAddress)) {
+    const isClaimed = await readContract({
+      address: CAMINO_EVENTS_CONTRACT_ADDRESS,
+      abi: eventsContractAbi,
+      functionName: '_hasUserClaimedRewards',
+      args: [
+        userAddress,
+        eventId,
+        index
+      ],
+      chainId: CAMINO_CHAIN_ID
+    });
+
+    // if (participants.includes(userAddress)) {
+    //   console.log(result);
+    //   setIsLoading(false);
+    //   setIsSuccess(true);
+    //   return;
+    // }
+    if (isClaimed) {
       setIsLoading(false);
       setIsSuccess(true);
       return;
     }
-
-    try {
-      const tx = await writeContract({
-        address: CAMINO_EVENTS_CONTRACT_ADDRESS,
-        abi: eventsContractAbi,
-        functionName: 'checkin',
-        args: [
-          eventId,
-          userAddress,
-        ],
-        chainId: CAMINO_CHAIN_ID
+    if (isByBackendWallet) {
+      const result = await axios.post('/api/claim', {
+        eventId,
+        userAddress,
+        index
       });
+      if (!result.data.isSuccess) {
+        setIsError(true);
+        setIsLoading(false);
+      }
+    } else {
+      try {
+        const tx = await writeContract({
+          address: CAMINO_EVENTS_CONTRACT_ADDRESS,
+          abi: eventsContractAbi,
+          functionName: 'checkin',
+          args: [
+            eventId,
+            userAddress,
+            index
+          ],
+          chainId: CAMINO_CHAIN_ID
+        });
 
-      console.log('tx', tx);
-    } catch (err) {
-      console.log(err);
-      setIsError(true);
-      setIsLoading(false);
+      } catch (err) {
+        console.log(err);
+        setIsError(true);
+        setIsLoading(false);
+      }
     }
+
   };
 
   const unwatch = useContractEvent({
@@ -107,7 +140,7 @@ const ClaimForm: React.FC<ClaimFormProps> = ({ eventId, eventStats }) => {
           setParticipants(current => {
             return [...current, (log[0] as any).args.userAddress];
           });
-
+          console.log(log)
           setIsSuccess(true);
           setIsLoading(false);
         }

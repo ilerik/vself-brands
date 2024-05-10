@@ -106,10 +106,11 @@ const EventCard: React.FC<EventCardProps> = ({ eventData, isOwnEvent, eventId, i
         </Loader>
       </Modal>
       <div className="flex flex-col w-full max-w-[1080px] sm:flex-row sm:max-w-1/2 p-[20px] text-black relative overflow-auto ">
-        <div className="flex w-full sm:w-1/3 justify-center items-center mt-2 p-[10px]">
-          <img src="/ninja2.png" alt="" className="" />
+        <div className="flex w-full sm:w-1/3 justify-center item-start mt-2 p-[10px]">
+          {/* <img src="/ninja2.png" alt="" className="" /> */}
+          <h1 className="text-[50px] font-bold">Blah blah <p className='text-[20px]'>blah</p></h1>
         </div>
-        <div className="flex w-full sm:w-2/3 sm:p-6 mb-10 items-center justify-start">
+        <div className="flex w-full sm:w-2/3 sm:p-6 mb-10 items-center justify-end">
           <div className="flex flex-col">
             <h5 className="text-black text-[30px] mb-[25px] font-drukMedium">{eventData?.eventName}</h5>
 

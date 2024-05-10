@@ -17,14 +17,18 @@ export interface LinkData {
   url: string | null;
   meta?: LinkMetaData | NFTMetaData;
 }
-
+export interface ShortNFT {
+  title: string | null;
+  url: string | null;
+  meta: any | null;
+}
 export interface vRandaProfile {
   avatar_url: string;
   name: string;
   bio: string;
   links: {};
   subscriptions?: { [key: string]: string };
-  nfts: {};
+  nfts: ShortNFT[];
 }
 
 export interface VSelfProfile {

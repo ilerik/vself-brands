@@ -17,6 +17,7 @@ interface ClaimsProps {
 }
 
 interface ClaimWidgetState {
+  index: number;
   qrString: string | null;
   claimString: string | null;
   imgSrc: string | null;
@@ -31,10 +32,14 @@ enum ClaimWidgetActionKind {
 
 interface ClaimWidgetAction {
   type: ClaimWidgetActionKind;
-  payload: string | null;
+  payload: {
+    index: number,
+    content: string | null,
+  };
 }
 
 const initialState: ClaimWidgetState = {
+  index: -1,
   qrString: null,
   claimString: null,
   imgSrc: null,
@@ -43,13 +48,13 @@ const initialState: ClaimWidgetState = {
 const claimReducer = (state: ClaimWidgetState, action: ClaimWidgetAction) => {
   switch (action.type) {
     case ClaimWidgetActionKind.CLOSE_MODAL:
-      return { ...state, qrString: null, claimString: null, imgSrc: null };
+      return { ...state,index: -1, qrString: null, claimString: null, imgSrc: null };
     case ClaimWidgetActionKind.OPEN_IMG_MODAL:
-      return { ...state, imgSrc: action.payload };
+      return { ...state, index: action.payload.index, imgSrc: action.payload.content };
     case ClaimWidgetActionKind.OPEN_QR_MODAL:
-      return { ...state, qrString: action.payload };
+      return { ...state, index: action.payload.index, qrString: action.payload.content };
     case ClaimWidgetActionKind.OPEN_CLAIM_MODAL:
-      return { ...state, claimString: action.payload };
+      return { ...state, index: action.payload.index, claimString: action.payload.content };
     default:
       return state;
   }
@@ -57,19 +62,25 @@ const claimReducer = (state: ClaimWidgetState, action: ClaimWidgetAction) => {
 
 const Claims: React.FC<ClaimsProps> = ({ eventId, eventData, eventStats, quests }) => {
   const [rewardImgs, setRewardImgs] = useState<string[]>([]);
-  const [{ qrString, imgSrc, claimString }, dispatch] = useReducer(claimReducer, initialState);
+  const [{index, qrString, imgSrc, claimString }, dispatch] = useReducer(claimReducer, initialState);
 
   const closeModal = () => {
     dispatch({
       type: ClaimWidgetActionKind.CLOSE_MODAL,
-      payload: null,
+      payload: {
+        index: -1,
+        content: null,
+      },
     });
   };
 
   const openImgModal = async (index: number) => {
     dispatch({
       type: ClaimWidgetActionKind.OPEN_IMG_MODAL,
-      payload: String(rewardImgs[index]),
+      payload: {
+        index: -1,
+        content: String(rewardImgs[index]),
+      },
     });
   };
 
@@ -81,14 +92,20 @@ const Claims: React.FC<ClaimsProps> = ({ eventId, eventData, eventStats, quests 
     const newString = origin + link;
     dispatch({
       type: ClaimWidgetActionKind.OPEN_QR_MODAL,
-      payload: newString,
+      payload: {
+        index: -1,
+        content: newString
+      },
     });
   };
 
-  const openClaimModal = () => {
+  const openClaimModal = (value: number, index: number) => {
     dispatch({
       type: ClaimWidgetActionKind.OPEN_CLAIM_MODAL,
-      payload: 'claiming',
+      payload: {
+        index,
+        content: 'claiming'
+      }
     });
   };
 
@@ -96,12 +113,32 @@ const Claims: React.FC<ClaimsProps> = ({ eventId, eventData, eventStats, quests 
     if (quests.length > 0) {
       (async () => {
         const rewardImgs: string[] = [];
-        await Promise.all(quests.map(async (quest) => {
-          const result = (await axios.get(quest?.rewardUri!)).data;
-          const imgUri = result.image;
-          const rewardImg = `https://nftstorage.link/ipfs/${imgUri.split('//')[1]}`;
-          rewardImgs.push(rewardImg);
-        }));
+        console.log(quests);
+        for(let i = 0; i< quests.length; i++){
+          try {
+            const result = (await axios.get(quests[i]?.rewardUri!)).data;
+            // console.log(result)
+            const imgUri = result.image;
+            const rewardImg = `https://nftstorage.link/ipfs/${imgUri.split('//')[1]}`;
+            rewardImgs.push(rewardImg);
+          } catch (error) {
+            console.log(error)
+            rewardImgs.push('/ninja2.png')
+          }
+        }
+        // await Promise.all(quests.map(async (quest) => {
+        //   // console.log(quest);
+        //   try {
+        //     const result = (await axios.get(quest?.rewardUri!)).data;
+        //     // console.log(result)
+        //     const imgUri = result.image;
+        //     const rewardImg = `https://nftstorage.link/ipfs/${imgUri.split('//')[1]}`;
+        //     rewardImgs.push(rewardImg);
+        //   } catch (error) {
+        //     console.log(error)
+        //     rewardImgs.push('/ninja2.png')
+        //   }
+        // }));
 
         setRewardImgs((current) => {
           return [...current, ...rewardImgs];
@@ -119,7 +156,7 @@ const Claims: React.FC<ClaimsProps> = ({ eventId, eventData, eventStats, quests 
         <DownloadQR qrString={String(qrString)} />
       </Modal>
       <Modal isOpen={!!claimString} onClose={closeModal}>
-        <ClaimForm eventId={eventId} eventStats={eventStats} />
+        <ClaimForm eventId={eventId} eventStats={eventStats} index={index} isByBackendWallet = {false} />
       </Modal>
       <div className="flex flex-col w-full max-w-[1080px] mx-auto">
         <h2 className="font-drukMedium uppercase text-black text-[30px] mb-[25px]">QR Strings</h2>

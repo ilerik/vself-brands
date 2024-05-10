@@ -46,7 +46,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ eventStats, eventData, ques
         <Loader is_load={!eventStats}>
           <div className="flex flex-col w-full max-w-[1080px] mx-auto">
             <h2 className="font-drukMedium uppercase text-black text-[30px] mb-[25px]">Event Stats</h2>
-            <EventStatsTable eventStats={eventStats} />
+            <EventStatsTable eventStats={eventStats} eventActions={eventActions} /* rewardsQnt={0} *//>
           </div>
         </Loader>
       </section>

@@ -47,7 +47,6 @@ const CreateNewEvent: React.FC = () => {
     try {
       const { event_description, event_name, finish_time, start_time, quests, files } = eventData;
 
-      console.log('eventData', eventData);
 
       let isValid = true;
       const warningItems = [];
@@ -197,7 +196,7 @@ const SuccessCreateMessage: React.FC<SuccessMessageProps> = ({ eventId }) => {
           event&apos;s page
         </a>
       </p>
-      <p className="text-[#3D3D3D] mb-2">Your Claim Link for Reward:</p>
+      {/* <p className="text-[#3D3D3D] mb-2">Your Claim Link for Reward:</p>
       <input type="text" className="w-full mb-4 text-black bg-white" value={claimLink} disabled />
       <button
         onClick={copyToClipBoard}
@@ -205,7 +204,7 @@ const SuccessCreateMessage: React.FC<SuccessMessageProps> = ({ eventId }) => {
         className="flex self-center px-6 py-2.5 bg-transparent border-[1px] border-[#019FFF] text-[#019FFF] hover:text-white font-medium text-xs leading-tight uppercase rounded-full hover:bg-[#019FFF] focus:outline-none focus:ring-0 transition duration-150 ease-in-out"
       >
         Copy
-      </button>
+      </button> */}
     </>
   );
 };

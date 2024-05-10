@@ -14,14 +14,14 @@ interface Metadata {
   };
 }
 
-const fetchRewards = async (url: string, nearid: string): Promise<Metadata[]> => {
+const fetchRewards = async (url: string, userAddress: string): Promise<Metadata[]> => {
   try {
     const tokenUrl = new URL(url);
     const contract_name = tokenUrl.pathname.replace('/accounts/', '');
-    const rewards = await getState(contract_name, nearid);
+    const rewards = await getState(contract_name, userAddress);
     return rewards;
   } catch (err) {
-    const rewards = await getState(url, nearid);
+    const rewards = await getState(url, userAddress);
     return rewards;
   }
 };
@@ -42,7 +42,7 @@ interface NFTLinkProps {
   meta: LinkMetaData | NFTMetaData | undefined;
   linkKey: string;
   isEditing?: boolean;
-  nearid?: string;
+  userAddress?: string;
   url?: string;
   url_prefix?: string;
   rmvCallback?: (key: string) => void;
@@ -53,17 +53,16 @@ const NftLink: React.FC<NFTLinkProps> = ({
   meta = undefined,
   linkKey,
   isEditing,
-  nearid,
+  userAddress,
   url = '',
   url_prefix = '',
   rmvCallback,
 }) => {
   const [nftImgs, setNftImgs] = useState<Metadata[]>([]);
-
   useEffect(() => {
     const initLink = async () => {
       try {
-        const imgs = await fetchRewards(url, String(nearid));
+        const imgs = await fetchRewards(url, String(userAddress));
         setNftImgs(imgs);
       } catch (err) {
         setNftImgs([]);
@@ -71,14 +70,15 @@ const NftLink: React.FC<NFTLinkProps> = ({
     };
     initLink();
     return () => setNftImgs([]);
-  }, [nearid, url]);
+  }, [userAddress, url]);
 
   // Skip if url is bad
   if (url === '' || url === null) return null;
+  console.log(isEditing);
   return (
-    <div className="flex flex-col" key={linkKey}>
+    <div className="flex flex-col w-1/3" key={linkKey}>
       <div className="flex justify-center md:justify-start md:ml-[40px]">
-        {isEditing ? (
+        {/* {isEditing ? (
           <LinkButton
             linkKey={linkKey}
             title={title}
@@ -90,7 +90,16 @@ const NftLink: React.FC<NFTLinkProps> = ({
           />
         ) : (
           <LinkPreview url={url} meta={meta} title={title} className="bg-white" />
-        )}
+        )} */}
+        <LinkButton
+          linkKey={linkKey}
+          title={title}
+          url={url}
+          url_prefix={url_prefix}
+          meta={meta}
+          rmvCallback={rmvCallback}
+          className="bg-white"
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-y-[20px] gap-4 auto-cols-max my-[40px] px-[40px]">

@@ -9,13 +9,13 @@ import { vRandaFormState } from '../../models/vRanda';
 
 interface VRandaPageProps {
   profile: vRandaFormState;
-  nearid: string;
+  userAddress: string;
 }
 
-const VRandaPage: NextPage<VRandaPageProps> = ({ profile, nearid }) => {
+const VRandaPage: NextPage<VRandaPageProps> = ({ profile, userAddress }) => {
   return (
-    <PageLayout colored title={`${nearid}`} description={profile?.bio} image={profile?.avatar_url} pageName="vRanda">
-      <ProfileComponent profile={profile} nearid={String(nearid)} />
+    <PageLayout colored title={`${userAddress}`} description={profile?.bio} image={profile?.avatar_url} pageName="vRanda">
+      <ProfileComponent userAddress={String(userAddress)} isEditing={false} />
     </PageLayout>
   );
 };
@@ -24,28 +24,28 @@ const VRandaPage: NextPage<VRandaPageProps> = ({ profile, nearid }) => {
 export const getServerSideProps = async ({ query, res }: GetServerSidePropsContext) => {
   res.setHeader('Cache-Control', 'public, s-maxage=0, stale-while-revalidate=10');
   const { slug } = query;
-  const nearid = String(slug);
+  const userAddress = String(slug);
   try {
     const { contract } = await getConnectedContract(socialContractName, socialContractMethods);
-    const result = await contract.get({ keys: [`${nearid}/vself/**`] });
+    const result = await contract.get({ keys: [`${userAddress}/vself/**`] });
     // Parse the data and udpate the state
-    if (!result.hasOwnProperty(nearid)) {
+    if (!result.hasOwnProperty(userAddress)) {
       throw 'Undefined';
     }
-    const { vself } = result[nearid!];
+    const { vself } = result[userAddress!];
     vself.links = vself.links ? Object.values(vself.links) : [];
     vself.nfts = vself.nfts ? Object.values(vself.nfts) : [];
 
     return {
       props: {
         profile: vself,
-        nearid: String(slug),
+        userAddress: String(slug),
       },
     };
   } catch (err) {
     return {
       props: {
-        nearid: String(slug),
+        userAddress: String(slug),
         profile: {},
       },
     };

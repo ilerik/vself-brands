@@ -5,7 +5,7 @@ import { IEventData, IQuest } from '../../models/Event';
 
 interface ClaimsListProps {
   qrbtnCallback: (index: number) => void;
-  claimBtnCallback: (index: number) => void;
+  claimBtnCallback: (index: number, questIndex: number) => void;
   imgCallback: (index: number) => void;
   event_id: number;
   eventData: IEventData | undefined;
@@ -26,16 +26,16 @@ const ClaimsList: React.FC<ClaimsListProps> = ({
     const value: number = parseInt((event.currentTarget as HTMLButtonElement).value, 10);
     qrbtnCallback(value);
   };
-  const getClaim = (event: React.MouseEvent<HTMLElement>) => {
+  const getClaim = (event: React.MouseEvent<HTMLElement>, index: number) => {
     const value: number = parseInt((event.currentTarget as HTMLButtonElement).value, 10);
-    claimBtnCallback(value);
+    claimBtnCallback(value, index);
   };
   const getImg = (index: number) => {
     imgCallback(index);
   };
-  const copyToClipBoard = () => {
+  const copyToClipBoard = (index: number) => {
     const origin = typeof window !== 'undefined' && window.location.origin ? window.location.origin : '';
-    const link = `/claim/${event_id}`;
+    const link = `/claim/${event_id}_${index}`;
     navigator.clipboard.writeText(origin + link);
   };
 
@@ -64,14 +64,41 @@ const ClaimsList: React.FC<ClaimsListProps> = ({
                   )}
                 </button>
               </td>
-              <td className="w-[150px]"></td>
+              {/* <td className="w-[150px]"></td>
               <td className="w-[200px]"></td>
-              <td className="w-[200px]"></td>
+              <td className="w-[200px]"></td> */}
+              <td className="w-[150px]">
+                <button
+                  type="button"
+                  onClick={getQRCode}
+                  className="flex my-4 self-center px-6 py-2.5 bg-transparent border-[1px] border-[#019FFF] text-[#019FFF] hover:text-white font-medium text-xs leading-tight uppercase rounded-full hover:bg-[#019FFF] focus:outline-none focus:ring-0 transition duration-150 ease-in-out"
+                >
+                  Get QR
+                </button>
+              </td>
+              <td className="w-[200px]">
+                <button
+                  onClick={(e) => getClaim(e ,index)}
+                  type="button"
+                  className="flex my-4 self-center px-6 py-2.5 bg-transparent border-[1px] border-[#019FFF] text-[#019FFF] hover:text-white font-medium text-xs leading-tight uppercase rounded-full hover:bg-[#019FFF] focus:outline-none focus:ring-0 transition duration-150 ease-in-out"
+                >
+                  Claim Reward
+                </button>
+              </td>
+              <td className="w-[200px]">
+                <button
+                  onClick={() => copyToClipBoard(index)}
+                  type="button"
+                  className="flex my-4 self-center px-6 py-2.5 bg-transparent border-[1px] border-[#019FFF] text-[#019FFF] hover:text-white font-medium text-xs leading-tight uppercase rounded-full hover:bg-[#019FFF] focus:outline-none focus:ring-0 transition duration-150 ease-in-out"
+                >
+                  Copy Claim Link
+                </button>
+              </td>
             </tr>
           ))
         }
 
-        <tr className="hover:text-black hover:bg-[#cbd5e173] ">
+        {/* <tr className="hover:text-black hover:bg-[#cbd5e173] ">
           <td></td>
           <td></td>
           <td className="px-[10px]"></td>
@@ -102,7 +129,7 @@ const ClaimsList: React.FC<ClaimsListProps> = ({
               Copy Claim Link
             </button>
           </td>
-        </tr>
+        </tr> */}
       </tbody>
     </table>
   );

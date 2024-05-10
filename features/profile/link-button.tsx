@@ -20,13 +20,18 @@ const LinkButton: React.FC<LinkButtonProps> = memo(
   ({ title, linkKey, meta, btnCallback = () => {}, rmvCallback = () => {}, url, url_prefix = '', className = '' }) => {
     const [isLinkLoaded, setLinkLoaded] = useState(false);
     const [favicon, setFavIcon] = useState(meta?.icon);
-
     useEffect(() => {
       const getFavicon = async () => {
         try {
-          const icon = await checkFavIcon(url);
-          setFavIcon(meta?.icon ?? icon);
-          setLinkLoaded(true);
+          if(url){
+            setFavIcon(url);
+            setLinkLoaded(true);
+          }
+          else {
+            const icon = await checkFavIcon(url);
+            setFavIcon(meta?.icon ?? icon);
+            setLinkLoaded(true);
+          }
         } catch (error) {
           setLinkLoaded(true);
         }
@@ -44,13 +49,15 @@ const LinkButton: React.FC<LinkButtonProps> = memo(
 
     const openLink = () => {
       if (window !== null) {
-        const newWindow = window?.open(url_prefix + url, '_blank');
+        const newWindow = window?.open( url, '_blank');
         if (newWindow !== null) newWindow.focus();
       }
     };
 
+    console.log(meta);
+
     return !isLinkLoaded ? (
-      <div className="pulse max-w-[320px] w-full relative z-0 my-2 px-[20px] py-[8px] h-[55px] rounded-full" />
+      <div className="pulse max-w-[320px] w-full relative z-0 my-2 px-[20px] py-[8px] h-[55px] rounded-[24px]" />
     ) : (
       <div
         role="listitem"
@@ -62,10 +69,11 @@ const LinkButton: React.FC<LinkButtonProps> = memo(
         <button type="button" name="mainLink" className="flex flex-row w-full items-center" onClick={linkCallback}>
           <LinkIconComponent icon={favicon} />
           <span
-            className="font-inter text-[12px] text-[#3D3D3D] overflow-hidden max-w-[250px] whitespace-nowrap underline mx-[12px] cursor-pointer"
+            className="font-inter text-[20px] font-black text-[#3D3D3D] overflow-hidden max-w-[250px] whitespace-nowrap underline mx-[12px] cursor-pointer"
             onClick={openLink}
           >
             {title}
+            <div className='text-[15px]'>{meta}</div>
           </span>
         </button>
         <button type="button" className=" z-100 hover:text-[#c66969db]" onClick={removeLink}>

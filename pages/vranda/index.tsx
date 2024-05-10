@@ -3,10 +3,11 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import type { NextPage } from 'next';
 import ProfileComponent from '../../features/profile';
 import { useWalletSelector } from '../../contexts/WalletSelectorContext';
+import { useAccount } from 'wagmi';
 import NotAuthorizedBlock from '../../components/not-authorized';
 import Link from 'next/link';
 import Head from 'next/head';
@@ -16,9 +17,17 @@ const ProfilePage: NextPage = () => {
   const { asPath } = useRouter();
   const origin = typeof window !== 'undefined' && window.location.origin ? window.location.origin : '';
   const URL = `${origin}${asPath}`;
-  const { accountId } = useWalletSelector();
+  // const { accountId } = useWalletSelector();
+  const { address } = useAccount();
+  const [isMounted, setisMounted] = useState(false);
 
-  if (!accountId) {
+  useEffect(() => {
+    setisMounted(true);
+  } , []);
+
+  if(!isMounted) return null;
+
+  if (!address) {
     return (
       <div className="flex justify-center min-h-screen items-center p-[20px]">
         <Head>
@@ -60,7 +69,7 @@ const ProfilePage: NextPage = () => {
           / Products / vRanda
         </span>
       </div>
-      <ProfileComponent nearid={accountId} isEditing={true} />
+      <ProfileComponent userAddress={address} isEditing={true} />
     </main>
   );
 };

@@ -35,6 +35,10 @@ export const subMenuItems: any = {
       url: WebappURLS.PRODUCTS_URL,
       title: 'COLLECTION DASHBOARD',
     },
+    {
+      url: WebappURLS.PROFILE_URL,
+      title: 'VRANDA',
+    },
   ],
   Resources: [
     {

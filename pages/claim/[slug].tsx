@@ -11,8 +11,9 @@ import eventsContractAbi from '../../abis/events-abi.json';
 
 interface ClaimPageProps {
   eventId: number;
+  index: number;
 }
-const ClaimPage: NextPage<ClaimPageProps> = ({ eventId }) => {
+const ClaimPage: NextPage<ClaimPageProps> = ({ eventId , index }) => {
   const [eventError, setEventError] = useState<boolean>(false);
   const [eventInfo, setEventInfo] = useState<IEvent | undefined>(undefined);
   const { asPath } = useRouter();
@@ -60,7 +61,7 @@ const ClaimPage: NextPage<ClaimPageProps> = ({ eventId }) => {
       ) : (
         <section className="flex flex-col w-full items-center">
           <div className="flex flex-col w-full bg-white p-[20px] rounded-lg max-w-[600px] my-[40px]">
-            <ClaimForm eventId={Number(eventId)} eventStats={eventInfo?.eventStats} />
+            <ClaimForm eventId={Number(eventId)} eventStats={eventInfo?.eventStats} index = {index} isByBackendWallet = {true} />
           </div>
         </section>
       )}
@@ -68,11 +69,13 @@ const ClaimPage: NextPage<ClaimPageProps> = ({ eventId }) => {
   );
 };
 
-ClaimPage.getInitialProps = async ({ query }) => {
-  const eventId = query.slug;
+ClaimPage.getInitialProps = async ({ query }: any) => {
+  const eventId = query.slug.split('_')[0];
+  const index = query.slug.split('_')[1];
 
   return {
     eventId: Number(eventId),
+    index: Number(index),
   };
 };
 

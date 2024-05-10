@@ -19,7 +19,7 @@ const EventActionsTable: React.FC<EventActionsTableProps> = ({ eventActions, isO
         </tr>
       </thead>
       <tbody>
-        {eventActions.map(({ userAddress, timestamp, actionStatus }, index) => (
+        {eventActions.map(({ userAddress, timestamp, rewardIndex }, index) => (
           <tr
             key={index}
             className="text-[#3D3D3D] hover:text-black hover:bg-[#cbd5e173] transition-colors ease-in cursor-pointer"
@@ -30,7 +30,7 @@ const EventActionsTable: React.FC<EventActionsTableProps> = ({ eventActions, isO
             </td>
             <td className="text-sm px-4 py-2 whitespace-nowrap align-middle text-center hidden sm:table-cell">
               {
-                actionStatus ? 'Successful' : 'Failed'
+                Number(rewardIndex) >= 0 ? 'Successful' : 'Failed'
               }
             </td>
           </tr>

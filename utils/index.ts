@@ -8,7 +8,7 @@ const { createHash } = require('crypto');
 import { utils } from 'near-api-js';
 import Resizer from 'react-image-file-resizer';
 import { NFTStorage } from 'nft.storage';
-
+import "dotenv/config";
 /**
  * Checks if environment is production.
  * @type {boolean}

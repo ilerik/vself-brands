@@ -6,14 +6,20 @@ import NFTLinkEditor from './nftlink-editor';
 
 const URL_PREFIX = 'https://explorer.testnet.near.org/accounts/';
 // TODO: Find proper type for nfts
-interface NftListProps {
-  nfts: any;
-  updateForm: (fields: Partial<vRandaFormState>) => void;
-  isEditing?: boolean;
-  nearid?: string;
+interface ShortNFT {
+  title: string | null;
+  url: string | null;
+  meta: string | null;
 }
 
-const NftList: React.FC<NftListProps> = ({ nfts = {}, isEditing = false, nearid = '', updateForm }) => {
+interface NftListProps {
+  nfts: ShortNFT[];
+  updateForm: (fields: Partial<vRandaFormState>) => void;
+  isEditing?: boolean;
+  userAddress?: string;
+}
+
+const NftList: React.FC<NftListProps> = ({ nfts = [], isEditing = false, userAddress = '', updateForm  }) => {
   const [isLinkEditing, setIsLinkEditing] = React.useState<boolean>(false);
   const [linkToEdit, setLinkToEditing] = React.useState<LinkData | undefined>(undefined);
 
@@ -27,57 +33,58 @@ const NftList: React.FC<NftListProps> = ({ nfts = {}, isEditing = false, nearid 
   };
 
   const handleNewLink = (link: LinkData) => {
-    const newNftsCollection = Object.assign({}, nfts);
+    // const newNftsCollection = Object.assign({}, nfts);
 
-    // Check duplicates TO DO
-    // const checkedNFTSLinksArray = newNftsArray.filter((el) => el.title === link.title);
-    // if (checkedNFTSLinksArray.length && !linkToEdit) {
-    //   throw 'already exist';
-    // }
-    const newKey = Math.floor(Math.random() * 1000000 + 1).toString();
-    newNftsCollection[newKey] = link;
-    updateForm({ nfts: newNftsCollection });
-    closeModal();
+    // // Check duplicates TO DO
+    // // const checkedNFTSLinksArray = newNftsArray.filter((el) => el.title === link.title);
+    // // if (checkedNFTSLinksArray.length && !linkToEdit) {
+    // //   throw 'already exist';
+    // // }
+    // const newKey = Math.floor(Math.random() * 1000000 + 1).toString();
+    // newNftsCollection[newKey] = link;
+    // updateForm({ nfts: newNftsCollection });
+    // closeModal();
   };
 
   const removeLink = (key: string) => {
-    const removedItem = {
-      [key]: {
-        title: null,
-        url: null,
-        meta: { contract_name: null, url: null, title: null, icon: null, description: null, image: null },
-      },
-    };
-    const newNftsCollection = Object.assign({}, nfts, removedItem);
-    updateForm({ nfts: newNftsCollection });
+    // const removedItem = {
+    //   [key]: {
+    //     title: null,
+    //     url: null,
+    //     meta: { contract_name: null, url: null, title: null, icon: null, description: null, image: null },
+    //   },
+    // };
+    // const newNftsCollection = Object.assign({}, nfts, removedItem);
+    // updateForm({ nfts: newNftsCollection });
   };
+  console.log('x' , isEditing , nfts);
   return (
     <>
       <Modal isOpen={isLinkEditing} onClose={closeModal}>
-        <NFTLinkEditor submitLink={handleNewLink} linkToEdit={linkToEdit} nearid={String(nearid)} />
+        <NFTLinkEditor submitLink={handleNewLink} linkToEdit={linkToEdit} userAddress={String(userAddress)} />
       </Modal>
       <div className="flex flex-row max-[500px]:flex-col justify-between p-[40px] max-[500px]:px-[20px]">
         <h2 className="flex flex-col h-40[px] justify-center font-drukHeavy text-[#3D3D3D] text-[18px] uppercase mx-[5px]">
           Nfts
         </h2>
-        {isEditing && <NftListButtons openModal={openModal} />}
+        {/* {isEditing && <NftListButtons openModal={openModal} />} */}
       </div>
-      <div className="flex flex-col pb-[40px]" data-testid="profile-nfts">
-        {Object.keys(nfts).map((key: string, index: number) => {
-          const title = nfts[key]?.title || '';
-          const meta = nfts[key]?.meta || undefined;
-          const url = nfts[key]?.url || '';
+      <div className="flex flex-row pb-[40px]" data-testid="profile-nfts">
+        {nfts.map((item: any, index: number) => {
+          // const title = nfts[key]?.title || '';
+          // const meta = nfts[key]?.meta || undefined;
+          // const url = nfts[key]?.url || '';
           return (
             <NftLink
               key={index}
-              linkKey={key}
-              title={title}
-              meta={meta}
-              url={url}
+              linkKey={`${index}`}
+              title={item.title}
+              meta={item.meta}
+              url={item.url}
               url_prefix={URL_PREFIX}
               rmvCallback={removeLink}
               isEditing={isEditing}
-              nearid={nearid}
+              userAddress={userAddress}
             />
           );
         })}

@@ -79,7 +79,7 @@ export interface IQuest {
 export interface IEventAction {
   timestamp: BigNumber;
   userAddress: string;
-  actionStatus: boolean;
+  rewardIndex: BigNumber;
 }
 
 export interface IEvent {

@@ -12,7 +12,7 @@ import { LinkData, NFTRewardData } from '../../models/vRanda';
 interface NFTLinkEditorProps {
   submitLink: (link: LinkData) => void;
   linkToEdit?: LinkData;
-  nearid?: string;
+  userAddress?: string;
 }
 
 const emptyLink: LinkData = {
@@ -21,7 +21,7 @@ const emptyLink: LinkData = {
   meta: undefined,
 };
 
-const NFTLinkEditor: React.FC<NFTLinkEditorProps> = ({ submitLink, linkToEdit = emptyLink, nearid }) => {
+const NFTLinkEditor: React.FC<NFTLinkEditorProps> = ({ submitLink, linkToEdit = emptyLink, userAddress }) => {
   const [link, setLink] = useState<LinkData>(linkToEdit);
   const [nfts, setNfts] = useState<NFTRewardData[]>([]);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -40,11 +40,11 @@ const NFTLinkEditor: React.FC<NFTLinkEditorProps> = ({ submitLink, linkToEdit = 
 
         try {
           contractName = value;
-          rewards = await getState(contractName, String(nearid));
+          rewards = await getState(contractName, String(userAddress));
         } catch (err) {
           const url = new URL(value);
           contractName = url.pathname.replace('/accounts/', '');
-          rewards = await getState(contractName, String(nearid));
+          rewards = await getState(contractName, String(userAddress));
         }
 
         setNfts(rewards);
@@ -65,7 +65,7 @@ const NFTLinkEditor: React.FC<NFTLinkEditorProps> = ({ submitLink, linkToEdit = 
       }
       setIsLoading(false);
     },
-    [link, nearid]
+    [link, userAddress]
   );
 
   // Debounce function to avoid multiple requests

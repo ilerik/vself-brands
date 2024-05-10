@@ -10,7 +10,7 @@ const LinkIconComponent: React.FC<LinkIconComponentProps> = ({ icon }) => {
   return icon !== undefined && icon !== '' && icon !== undefined ? (
     <img
       role="img"
-      style={{ width: 21, height: 21 }}
+      style={{ width: 60, height: 60 , borderRadius: 50 }}
       alt=""
       src={icon === null ? undefined : icon}
       onError={({ currentTarget }) => {
