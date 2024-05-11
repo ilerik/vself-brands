@@ -108,13 +108,13 @@ const EventCard: React.FC<EventCardProps> = ({ eventData, isOwnEvent, eventId, i
       <div className="flex flex-col w-full max-w-[1080px] sm:flex-row sm:max-w-1/2 p-[20px] text-black relative overflow-auto ">
         <div className="flex w-full sm:w-1/3 justify-center item-start mt-2 p-[10px]">
           {/* <img src="/ninja2.png" alt="" className="" /> */}
-          <h1 className="text-[50px] font-bold">Blah blah <p className='text-[20px]'>blah</p></h1>
+          <h1 className="text-[50px] font-bold">{eventData?.eventName} <p className='text-[20px]'>{eventData?.eventDescription}</p></h1>
         </div>
         <div className="flex w-full sm:w-2/3 sm:p-6 mb-10 items-center justify-end">
           <div className="flex flex-col">
-            <h5 className="text-black text-[30px] mb-[25px] font-drukMedium">{eventData?.eventName}</h5>
+            <h5 className="text-black text-[30px] mb-[25px] font-drukMedium"></h5>
 
-            <p className="text-base mb-4 text-[#3D3D3D]">{eventData?.eventDescription}</p>
+            <p className="text-base mb-4 text-[#3D3D3D]"></p>
             <p className="text-base mb-4 text-[#3D3D3D]">
               Start Time: {eventData?.startTime && formatTimeStampToLocaleDateString(Number(eventData.startTime))}
             </p>
