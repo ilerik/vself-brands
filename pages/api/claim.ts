@@ -8,7 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { eventId, userAddress, index } = req.body;
 
     const caminoProvider = new ethers.providers.JsonRpcProvider(process.env.COLUMBUS_RPC);
-    const signer = new ethers.Wallet(process.env.BACKEND_WALLET_PRIVAKE_KEY as string, caminoProvider);
+    const signer = new ethers.Wallet(process.env.BACKEND_WALLET_PRIVATE_KEY as string, caminoProvider);
     const eventContract = new ethers.Contract(CAMINO_EVENTS_CONTRACT_ADDRESS as string, eventsContractAbi, signer);
 
     try {
