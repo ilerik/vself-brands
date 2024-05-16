@@ -53,10 +53,12 @@ const ClaimForm: React.FC<ClaimFormProps> = ({ eventId, eventStats, index, isByB
   }, [address]);
 
   const handleInputChange = (e: React.FormEvent<HTMLInputElement>) => {
-    const value = e.currentTarget.value;
+    let value = e.currentTarget.value;
     setIsAuthError(false);
     setIsSuccess(false);
     setIsError(false);
+    if(value.indexOf('0x') == 0)
+      value = value.substring(2);
     setUserAddress(`0x${value}`);
   };
 
@@ -181,7 +183,7 @@ const ClaimForm: React.FC<ClaimFormProps> = ({ eventId, eventStats, index, isByB
           <form className="flex flex-row items-center" onSubmit={handleSubmit}>
             <input
               className="px-[10px] py-[5px] mr-2 w-full text-black bg-transparent border border-solid border-gray-300 rounded-full transition ease-in-out focus:border-black focus:outline-none"
-              disabled={true}
+              disabled={false}
               value={userAddress}
               onChange={handleInputChange}
               placeholder="Wallet Address"

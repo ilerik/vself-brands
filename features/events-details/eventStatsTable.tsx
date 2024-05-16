@@ -69,8 +69,8 @@ const EventStatsTable: React.FC<EventStatsTableProps> = ({ eventStats, eventActi
           reward_index: Number(item.rewardIndex),
         }))}
       />
-      <div className="mt-5">
-        <h3 className="text-[20px] font-interBold mb-[20px]">Top Ambassadors</h3>
+      {/* <div className="mt-5"> */}
+        {/* <h3 className="text-[20px] font-interBold mb-[20px]">Top Ambassadors</h3> */}
         {/* <table>
           <tbody>
             {topAmbassadors
@@ -81,7 +81,7 @@ const EventStatsTable: React.FC<EventStatsTableProps> = ({ eventStats, eventActi
               ))}
           </tbody>
         </table> */}
-      </div>
+      {/* </div> */}
     </div>
     // <table className="w-full">
     //   <thead className="bg-[#d9d9d9b0] text-black font-interBold text-[14px]">
